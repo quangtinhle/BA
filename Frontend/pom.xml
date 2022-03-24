@@ -66,6 +66,14 @@
             <artifactId>okhttp</artifactId>
             <version>4.9.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-model-api -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-model-api</artifactId>
+            <version>1.0.2.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -31,12 +31,8 @@ public class ViewController {
 
     @PostMapping("/signin")
     public String getLoginForm(@ModelAttribute UserDTO userDTO, Model model) {
-        Credentials credentials = new Credentials(userDTO.getPassword());
-        List<Credentials> list = new ArrayList<>();
-        list.add(credentials);
-        User user = ReciverUserConvert.converttoUser(userDTO,list);
         model.addAttribute("messsage", "SIGN IN");
-        userService.createUser(user);
+        userService.createUser(userDTO);
         //model.addAttribute("user", new User());
         return "signinForm";
     }

@@ -19,6 +19,7 @@ public class User {
     private String email;
     private String enabled;
     private List<Credentials> credentials;
+    private List<String> requiredActions;
 
 
 }
