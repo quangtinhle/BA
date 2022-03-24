@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title>Register Form</title>
+	<!-- Mobile Specific Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<!-- Font-->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/opensans-font.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/fonts/line-awesome/css/line-awesome.min.css}">
+	<!-- Jquery -->
+	<link rel="stylesheet" th:href="@{https://jqueryvalidation.org/files/demo/site-demos.css}">
+	<!-- Main Style Css -->
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="form-v4">
+	<div class="page-content">
+		<div class="form-v4-content">
+			<form action ="#" class="form-detail" th:action="@{/login}" method="post" id="myform">
+				<h2 th:text = " ${messsage} " align="center"></h2>
+				<div class="form-row">
+					<label for="username">Username</label>
+					<input type="text" name="username" id="username" class="input-text" required>
+				</div>
+
+				<div class="form-row">
+					<label for="password">Password</label>
+					<input type="password" name="password" id="password" class="input-text" required>
+				</div>
+
+
+				<div class="form-row-last">
+					<input type="submit" name="signin" class="register" value="Sign In">
+				</div>
+			</form>
+		</div>
+	</div>
+
+</body>
+</html>
