@@ -1,20 +1,23 @@
 package com.example.frontend.controller;
 
 import com.example.frontend.Entity.Greeting;
-import com.example.frontend.Entity.User;
-import com.example.frontend.Model.SignInForm;
+import com.example.frontend.Model.Credentials;
+import com.example.frontend.Model.User;
+import com.example.frontend.Model.UserDTO;
+import com.example.frontend.convert.ReciverUserConvert;
 import com.example.frontend.service.UserService;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
-public class Demo {
+public class ViewController {
 
 
 @Autowired UserService userService;
@@ -22,12 +25,19 @@ public class Demo {
     @GetMapping("/registration")
     public String getRegisterForm(Model model) {
         model.addAttribute("messsage", "REGISTER FORM");
+        model.addAttribute("user", new UserDTO());
         return "registrationForm";
     }
 
-    @GetMapping("/signin")
-    public String getLoginForm(Model model) {
+    @PostMapping("/signin")
+    public String getLoginForm(@ModelAttribute UserDTO userDTO, Model model) {
+        Credentials credentials = new Credentials(userDTO.getPassword());
+        List<Credentials> list = new ArrayList<>();
+        list.add(credentials);
+        User user = ReciverUserConvert.converttoUser(userDTO,list);
         model.addAttribute("messsage", "SIGN IN");
+        userService.createUser(user);
+        //model.addAttribute("user", new User());
         return "signinForm";
     }
 
