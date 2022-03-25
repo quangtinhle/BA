@@ -31,7 +31,10 @@ public class UserService {
     public  String createUser(UserDTO userDTO)
     {
         Credentials credentials = new Credentials(userDTO.getPassword());
-        User user = ReciverUserConvert.converttoUser(userDTO, Arrays.asList(credentials),Arrays.asList("CONFIGURE_TOTP"));
+        User user = ReciverUserConvert.converttoUser(userDTO, Arrays.asList(credentials));
+        if(userDTO.isTwoFa()) {
+            user.setRequiredActions(Arrays.asList("CONFIGURE_TOTP"));
+        }
         String token = getAccessToken();
         Request request = connection.getRequestCreateUser(createUserEndPointUrl,user,token,gson.toJson(user));
         Response response = connection.getResponse(request);

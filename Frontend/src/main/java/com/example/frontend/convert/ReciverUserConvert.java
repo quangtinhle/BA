@@ -10,7 +10,7 @@ public class ReciverUserConvert {
 
     private ReciverUserConvert () {}
 
-    public static User converttoUser(UserDTO userDTO, List<Credentials> list, List<String> requiresActions) {
+    public static User converttoUser(UserDTO userDTO, List<Credentials> list) {
         return User.builder()
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
@@ -18,7 +18,7 @@ public class ReciverUserConvert {
                 .enabled("true")
                 .username(userDTO.getUserName())
                 .credentials(list)
-                .requiredActions(requiresActions)
+                //.requiredActions(requiresActions)
                 .build();
 
 

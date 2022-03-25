@@ -19,8 +19,9 @@
 			<form action="#" class="form-left" th:action="@{/signin}" method="post">
 
 				<h2>INFOMATION</h2>
-				<p class="text-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Et molestie ac feugiat sed. Diam volutpat commodo.</p>
-				<p class="text-2"><span>Eu ultrices:</span> Vitae auctor eu augue ut. Malesuada nunc vel risus commodo viverra. Praesent elementum facilisis leo vel.</p>
+				<p class="text-1"><span>Vertrauensniveaus normal</span>Bitte geben Sie folgende personenbezogene Daten, um Zugriff auf die Leistungen des Vertrauensniveaus normal zu erhalten. Diese Informationen sind erforderlich.</p>
+				<p class="text-2"><span>Vertrauensniveaus substanziell</span> Sie können zusätzlich die Zwei-Faktor-Authentisierung aktivieren. Diese Funktion ist optional. Wenn Sie sie aktivieren, erhalten Sir jedoch Zugriff auf die Leistungen des Vertrauensnivieaus substanziell.
+				Die Zwei-Faktor-Authentisierung können Sie auch in einem Späteren Zeitpunkt aktivieren.</p>
 				<div class="form-left-last">
 					<input th:action="@{/signin}"  type="submit" name="account" class="account" value="Have An Account">
 				</div>
@@ -58,6 +59,12 @@
 						<label for="comfirm-password">Comfirm Password</label>
 						<input type="password" name="comfirm_password" id="comfirm_password" class="input-text" required>
 					</div>
+				</div>
+				<div class="form-checkbox">
+					<label class="container"><p>Zwei-Faktor-Authentisierung aktivieren</p>
+						<input type="checkbox" name="checkbox" th:field="*{twoFa}">
+						<span class="checkmark"></span>
+					</label>
 				</div>
 				<div class="form-row-last">
 					<input type="submit" name="register" class="register" value="Register">
