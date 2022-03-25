@@ -108,6 +108,7 @@ public class OkhttpConnection {
         Request request = new Request.Builder()
                 .addHeader("Content-Type","application/json")
                 .addHeader("Authorization","Bearer " + token)
+                .url(url)
                 .build();
         return request;
     }

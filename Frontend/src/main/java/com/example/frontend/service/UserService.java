@@ -6,6 +6,7 @@ import com.example.frontend.Model.UserDTO;
 import com.example.frontend.connection.OkhttpConnection;
 import com.example.frontend.convert.ReciverUserConvert;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -55,8 +56,11 @@ public class UserService {
 
 
 
-        String createdID = getCreatedUserId(response);
-        System.out.println(createdID);
+        String createdId = getCreatedUserId(response);
+        System.out.println(createdId);
+        String roleId = getRolleId();
+        System.out.println(roleId);
+
         String res = "";
         try {
             res = response.body().string();
@@ -87,16 +91,23 @@ public class UserService {
 
     public String getCreatedUserId(Response response) {
         String location = response.header("Location").toString();
-        return location.substring(location.length() -36);
+        String createdUserId = location.substring(location.length() - 36);
+        return createdUserId;
     }
 
-    public void getRolleId() {
+    public String getRolleId() {
 
         String url = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/roles/";
         Request request = connection.getRequestRoleId(url + ROLE,getAccessToken());
         Response response = connection.getResponse(request);
-
-        JsonObject jsonObject = gson.toJson()
+        JsonObject jsonObject = null;
+        try {
+            jsonObject = new JsonParser().parse(response.body().string()).getAsJsonObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonObject);
+        return jsonObject.get("id").getAsString();
 
     }
 
