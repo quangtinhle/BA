@@ -6,7 +6,6 @@ import com.example.frontend.Model.UserDTO;
 import com.example.frontend.connection.OkhttpConnection;
 import com.example.frontend.convert.ReciverUserConvert;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,7 +30,7 @@ public class UserService {
     @Value("${keycloak}")
     private String keycloak;
     @Value("${requiredAction}")
-    private String requireAction;
+    private String requiredAction;
     @Value("${role}")
     private String ROLE;
 
@@ -44,26 +43,22 @@ public class UserService {
     //create new user on authorization server of keycloak
     public  String createUser(UserDTO userDTO)
     {
+        String url = keycloak + createUserEndPoint;
+
         Credentials credentials = new Credentials(userDTO.getPassword());
         User user = ReciverUserConvert.converttoUser(userDTO, Arrays.asList(credentials));
         if(userDTO.isTwoFa()) {
-            user.setRequiredActions(Arrays.asList(requireAction));
-
+            user.setRequiredActions(Arrays.asList("CONFIGURE_TOTP"));
+            //user.setRequiredActions(Arrays.asList(requiredAction));
         }
-        String token = getAccessToken();
-        String url = keycloak + createUserEndPoint;
-        Request request = connection.getRequestCreateUser(url,token,gson.toJson(user));
+
+        Request request = connection.getRequestCreateUser(url,getAccessToken(),gson.toJson(user));
         Response response = connection.getResponse(request);
-
-
-
-        //
 
         if(userDTO.isTwoFa()) {
             String createdId = getCreatedUserId(response);
-            setUserRole(response);
+            setUserRole(createdId);
         }
-
 
 
         String res = "";
@@ -72,7 +67,7 @@ public class UserService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(res);
+        //System.out.println(res);
 
         return response.message();
     }
@@ -119,10 +114,10 @@ public class UserService {
 
     }
 
-    public void setUserRole(Response response) {
+    public void setUserRole(String createdUserId) {
 
-        String requestUrl = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/users/" + getCreatedUserId(response) + "/role-mappings/realm";
-        JsonObject jsonObject = getRoleasJson();
+        String requestUrl = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/users/" + createdUserId + "/role-mappings/realm";
+        //JsonObject jsonObject = getRoleasJson();
         String json = "[{\n" +
                 "        \"id\": \"0319feb8-db85-44ee-b40f-c7e6caaa31cb\",\n" +
                 "        \"name\": \"substanziell\"\n" +
@@ -130,7 +125,7 @@ public class UserService {
         //String json ="[" + jsonObject.toString() + "]";
         Request requestsetUserRole = connection.getRequestsetUserRole(requestUrl,getAccessToken(),json);
         Response response1 = connection.getResponse(requestsetUserRole);
-        System.out.println(response1.message());
+        //System.out.println(response1.message());
 
     }
 
