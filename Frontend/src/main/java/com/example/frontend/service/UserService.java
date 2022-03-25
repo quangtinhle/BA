@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +54,10 @@ public class UserService {
         Request request = connection.getRequestCreateUser(url,user,token,gson.toJson(user));
         Response response = connection.getResponse(request);
 
-        System.out.println(response.header("Location"));
 
 
+        String createdID = getCreatedUserId(response);
+        System.out.println(createdID);
         String res = "";
         try {
             res = response.body().string();
@@ -82,6 +84,11 @@ public class UserService {
         JsonObject bodyJson = new JsonParser().parse(body).getAsJsonObject();
 
         return bodyJson.get("access_token").getAsString();
+    }
+
+    public String getCreatedUserId(Response response) {
+        String location = response.header("Location").toString();
+        return location.substring(location.length() -36);
     }
 
 }
