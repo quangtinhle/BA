@@ -12,6 +12,8 @@ import com.google.gson.JsonParser;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.tomcat.util.json.JSONParser;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,24 +25,35 @@ import java.util.List;
 @Service
 public class UserService {
 
+    @Value("${endPointUser}")
+    private String createUserEndPoint;
+    @Value("${tokenEndPointUrl}")
+    private String tokenEndPoint;
+    @Value("${keycloak}")
+    private String keycloak;
+    @Value("${requiredAction}")
+    private String requireAction;
+
+
     private OkhttpConnection connection = OkhttpConnection.getInstance();
-    private String tokenEndPointUrl = "http://localhost:8280/auth/realms/master/protocol/openid-connect/token";
-    private String createUserEndPointUrl = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/users";
+
+
     private Gson gson = new Gson();
 
+    //create new user on authorization server of keycloak
     public  String createUser(UserDTO userDTO)
     {
         Credentials credentials = new Credentials(userDTO.getPassword());
         User user = ReciverUserConvert.converttoUser(userDTO, Arrays.asList(credentials));
         if(userDTO.isTwoFa()) {
-            user.setRequiredActions(Arrays.asList("CONFIGURE_TOTP"));
+            user.setRequiredActions(Arrays.asList(requireAction));
         }
         String token = getAccessToken();
-        Request request = connection.getRequestCreateUser(createUserEndPointUrl,user,token,gson.toJson(user));
+        String url = keycloak + createUserEndPoint;
+        Request request = connection.getRequestCreateUser(url,user,token,gson.toJson(user));
         Response response = connection.getResponse(request);
 
         System.out.println(response.header("Location"));
-
 
 
         String res = "";
@@ -54,9 +67,12 @@ public class UserService {
         return response.message().toString();
     }
 
+
+//get access token for keycloak admin cli.
     public String getAccessToken() {
 
-        Response response = connection.getResponse(connection.getRequestToken(tokenEndPointUrl));
+        String url = keycloak + tokenEndPoint;
+        Response response = connection.getResponse(connection.getRequestToken(url ));
         String body = "";
         try {
             body = response.body().string();
