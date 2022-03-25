@@ -103,4 +103,12 @@ public class OkhttpConnection {
         }
         return response;
     }
+
+    public Request getRequestRoleId(String url, String token) {
+        Request request = new Request.Builder()
+                .addHeader("Content-Type","application/json")
+                .addHeader("Authorization","Bearer " + token)
+                .build();
+        return request;
+    }
 }

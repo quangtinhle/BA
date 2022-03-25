@@ -5,23 +5,20 @@ import com.example.frontend.Model.User;
 import com.example.frontend.Model.UserDTO;
 import com.example.frontend.connection.OkhttpConnection;
 import com.example.frontend.convert.ReciverUserConvert;
-import com.fasterxml.jackson.annotation.JsonValue;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.tomcat.util.json.JSONParser;
-import org.keycloak.admin.client.resource.RealmResource;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
+
 import java.util.Arrays;
-import java.util.List;
+
 
 @Service
 public class UserService {
@@ -34,6 +31,8 @@ public class UserService {
     private String keycloak;
     @Value("${requiredAction}")
     private String requireAction;
+    @Value("${role}")
+    private String ROLE;
 
 
     private OkhttpConnection connection = OkhttpConnection.getInstance();
@@ -89,6 +88,16 @@ public class UserService {
     public String getCreatedUserId(Response response) {
         String location = response.header("Location").toString();
         return location.substring(location.length() -36);
+    }
+
+    public void getRolleId() {
+
+        String url = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/roles/";
+        Request request = connection.getRequestRoleId(url + ROLE,getAccessToken());
+        Response response = connection.getResponse(request);
+
+        JsonObject jsonObject = gson.toJson()
+
     }
 
 }
