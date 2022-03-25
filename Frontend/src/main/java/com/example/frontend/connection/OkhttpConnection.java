@@ -1,6 +1,7 @@
 package com.example.frontend.connection;
 
 import com.example.frontend.Model.User;
+import com.google.gson.JsonObject;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -46,43 +47,10 @@ public class OkhttpConnection {
         return request;
     }
 
-    public Request getRequestCreateUser(String url, User user, String token, String json) {
+    public Request getRequestCreateUser(String url, String token, String json) {
 
-       /* String json = "{\n" +
-                "\"firstName\":\"Phuc\",\n" +
-                "\"lastName\":\"Huynh\", \n" +
-                "\"email\":\"testw@test.com\", \n" +
-                "\"enabled\":\"true\", \n" +
-                "\"username\":\"postmaneeeee\",\n" +
-                "\"credentials\":[{\"type\":\"password\",\"value\":\"Master123\",\"temporary\":false}]\n" +
-                "}";*/
+
         RequestBody body = RequestBody.create(JSON,json);
-
-/*        RequestBody body = new FormBody.Builder()
-                .add("firstName","Hallo")
-                .add("lastName","Hello")
-                .add("email","test@d.com")
-                .add("enabled","true")
-                .add("username","dumami")
-                .build();
-        System.out.println(body.contentType().subtype());*/
-            /*
-
-
-
-
-        //String credentialsvalue = "[{\"type\":\"password\",\"value\":" + user.getPassword() + ",\"temporary\":false}]";
-        RequestBody requestBody = new FormBody.Builder()
-                .add("firstName",user.getFirstName())
-                .add("lastName",user.getLastName())
-                .add("email", user.getEmail())
-                .add("enabled","true")
-                .add("username",user.getUserName())
-                //.add("credentials",credentialsvalue)
-                .build();
-
-        //RequestBody body = RequestBody.create(requestBody.contentType().toString(),JSON);*/
-
         Request request = new Request.Builder()
                 .addHeader("Content-Type","application/json")
                 .addHeader("Authorization","Bearer " + token)
@@ -112,4 +80,21 @@ public class OkhttpConnection {
                 .build();
         return request;
     }
+
+
+    public Request getRequestsetUserRole(String url, String token, String json) {
+
+        RequestBody body = RequestBody.create(JSON,json);
+        Request request = new Request.Builder()
+                .addHeader("Content-Type","application/json")
+                .addHeader("Authorization","Bearer " + token)
+                .url(url)
+                .post(body)
+                .build();
+
+
+        return request;
+    }
+
+
 }

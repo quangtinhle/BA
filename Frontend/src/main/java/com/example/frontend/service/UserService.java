@@ -48,18 +48,23 @@ public class UserService {
         User user = ReciverUserConvert.converttoUser(userDTO, Arrays.asList(credentials));
         if(userDTO.isTwoFa()) {
             user.setRequiredActions(Arrays.asList(requireAction));
+
         }
         String token = getAccessToken();
         String url = keycloak + createUserEndPoint;
-        Request request = connection.getRequestCreateUser(url,user,token,gson.toJson(user));
+        Request request = connection.getRequestCreateUser(url,token,gson.toJson(user));
         Response response = connection.getResponse(request);
 
 
 
-        String createdId = getCreatedUserId(response);
-        System.out.println(createdId);
-        String roleId = getRolleId();
-        System.out.println(roleId);
+        //
+
+        if(userDTO.isTwoFa()) {
+            String createdId = getCreatedUserId(response);
+            setUserRole(response);
+        }
+
+
 
         String res = "";
         try {
@@ -69,7 +74,7 @@ public class UserService {
         }
         System.out.println(res);
 
-        return response.message().toString();
+        return response.message();
     }
 
 
@@ -95,19 +100,37 @@ public class UserService {
         return createdUserId;
     }
 
-    public String getRolleId() {
+    public JsonObject getRoleasJson() {
 
         String url = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/roles/";
         Request request = connection.getRequestRoleId(url + ROLE,getAccessToken());
         Response response = connection.getResponse(request);
         JsonObject jsonObject = null;
+
         try {
             jsonObject = new JsonParser().parse(response.body().string()).getAsJsonObject();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonObject);
-        return jsonObject.get("id").getAsString();
+        JsonObject jsonRole = new JsonObject();
+        jsonRole.add("id",jsonObject.get("id"));
+        jsonRole.add("name",jsonObject.get("name"));
+        return jsonRole;
+
+    }
+
+    public void setUserRole(Response response) {
+
+        String requestUrl = "http://localhost:8280/auth/admin/realms/appsdeveloperblog/users/" + getCreatedUserId(response) + "/role-mappings/realm";
+        JsonObject jsonObject = getRoleasJson();
+        String json = "[{\n" +
+                "        \"id\": \"0319feb8-db85-44ee-b40f-c7e6caaa31cb\",\n" +
+                "        \"name\": \"substanziell\"\n" +
+                "}]";
+        //String json ="[" + jsonObject.toString() + "]";
+        Request requestsetUserRole = connection.getRequestsetUserRole(requestUrl,getAccessToken(),json);
+        Response response1 = connection.getResponse(requestsetUserRole);
+        System.out.println(response1.message());
 
     }
 
