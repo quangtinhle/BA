@@ -11,7 +11,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/demo")
+    @GetMapping("")
     public String getDefault() {
         return "Working....";
     }
