@@ -26,10 +26,9 @@ public class ViewController {
     }
 
 
-    @GetMapping("/login-success")
+    @GetMapping("/userinformation")
     public String getDefaultView(Model model) {
-        model.addAttribute("message", "Quang Tinh Le");
-        return "defaultView";
+        return "userinformation";
     }
 
 /*
