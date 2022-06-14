@@ -1,5 +1,6 @@
 package com.example.frontend.controller;
 
+import com.example.frontend.Entity.AccessToken;
 import com.example.frontend.Entity.Greeting;
 import com.example.frontend.Entity.UserAS;
 import com.example.frontend.Entity.UserResourceServer;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Base64;
 import java.util.NoSuchElementException;
 
 
@@ -60,10 +62,47 @@ public class ViewController {
         {
             e.printStackTrace();
         }
+
+
         if(userResourceServer == null) {
             UserResourceServer newUser = new UserResourceServer(userId);
-            String jwt = userResourceServerService.getUserInformationfromID(userId);
             ObjectMapper om = new ObjectMapper();
+            OidcIdToken idToken = principal.getIdToken();
+            String idTokenValue = idToken.getTokenValue();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+
+            OAuth2AuthorizedClient oAuth2AuthorizedClient = auth2AuthorizedClientService.loadAuthorizedClient(oauthToken.getAuthorizedClientRegistrationId()
+                    ,oauthToken.getName());
+
+            String jwtAccessToken = oAuth2AuthorizedClient.getAccessToken().getTokenValue();
+            String[] chunks = jwtAccessToken.split("\\.");
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+
+            String payload = new String(decoder.decode(chunks[1]));
+
+            AccessToken accessToken = null;
+
+            try {
+                accessToken = om.readValue(payload,AccessToken.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            newUser.setUsername(accessToken.getPreferred_username());
+            newUser.setFirstname(accessToken.getGiven_name());
+            newUser.setLastname(accessToken.getFamily_name());
+            newUser.setEmail(accessToken.getEmail());
+            userResourceServerService.createUser(newUser);
+
+            accessToken.getRealm_access().getRoles().stream().forEach(System.out::println);
+
+        }
+
+
+   /*     if(userResourceServer == null) {
+            UserResourceServer newUser = new UserResourceServer(userId);
+            String jwt = userResourceServerService.getUserInformationfromID(userId);
+
             UserAS userInfo = null;
             try {
                  userInfo = om.readValue(jwt,UserAS.class);
@@ -75,22 +114,12 @@ public class ViewController {
             newUser.setUsername(userInfo.username);
             newUser.setEmail(userInfo.email);
             userResourceServerService.createUser(newUser);
-        }
+        }*/
 
 
 
-        OidcIdToken idToken = principal.getIdToken();
-        String idTokenValue = idToken.getTokenValue();
-        System.out.println("IdToken: "+ idTokenValue);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
-        OAuth2AuthorizedClient oAuth2AuthorizedClient = auth2AuthorizedClientService.loadAuthorizedClient(oauthToken.getAuthorizedClientRegistrationId()
-        ,oauthToken.getName());
 
-        String jwtAccessToken = oAuth2AuthorizedClient.getAccessToken().getTokenValue();
-
-        System.out.println("AccessToken: " + jwtAccessToken);
         return "userinformation";
     }
 
